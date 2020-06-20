@@ -12,8 +12,7 @@ Call script with same options like for [mosquitto_sub](https://mosquitto.org/man
 Tested on a router Teltonika RUT955 running BusyBox v1.30.1 () built-in shell (ash)
 
 ## Dependencies:
-- mqtt broker (already installed on RUT955, just needs to be activated)
-- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``
-)
+- mqtt broker (already installed on RUT955, just needs to be activated via WebGUI)
+- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``)
 
 Based on https://unix.stackexchange.com/a/274224
