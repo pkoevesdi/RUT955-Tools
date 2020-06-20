@@ -1,9 +1,9 @@
 # MQTT-Logger
-Simple MQTT-Logger for Busybox or other shells. Writes all MQTT messages from subscribed topics into a file.
+Simple MQTT-Logger for Busybox or other shells. Writes all MQTT messages from subscribed topics comma separated into a file.
 ## Features
 - Log rotation when disk space below threshold (configurable)
 - Logfiles split by size (configurable)
-- option to log into subfolders by topic or all topics together into same log file. If the latter, then the topic gets also logged.
+- option to log into subfolders by topic or all topics together into same log file. If the latter, then a topic column is added.
 
 Call script with same options like for [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html). '-v' gets added. Configure output directory and other parameters inside script.
 
