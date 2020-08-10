@@ -1,5 +1,7 @@
 # MQTT-Logger
-Simple MQTT-Logger for Busybox or other shells. Writes all MQTT messages from subscribed topics comma separated into a file.
+Simple MQTT-Logger for Busybox or other shells. Writes all MQTT messages from subscribed topics comma separated into a file. 
+Based on https://unix.stackexchange.com/a/274224
+
 ## Features
 - Log rotation when disk space below threshold (configurable)
 - Logfiles split by size (configurable)
@@ -13,6 +15,5 @@ Tested on a router Teltonika RUT955 running BusyBox v1.30.1 () built-in shell (a
 
 ## Dependencies:
 - mqtt broker (already installed on RUT955, just needs to be activated via WebGUI, or use remote broker)
-- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``)
+- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``. If you get an error ``Unknown package``, try ``opkg update`` before.)
 
-Based on https://unix.stackexchange.com/a/274224
