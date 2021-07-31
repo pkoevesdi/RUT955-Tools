@@ -14,6 +14,6 @@ Call script with same options like for [mosquitto_sub](https://mosquitto.org/man
 Tested on a router Teltonika RUT955 running BusyBox v1.30.1 () built-in shell (ash)
 
 ## Dependencies:
-- mqtt broker (already installed on RUT955, just needs to be activated via WebGUI, or use remote broker)
-- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``. If you get an error ``Unknown package``, try ``opkg update`` before.)
+- mqtt broker (officially avaliable as a package from teltonika RUT955, just needs to be installed and activated via WebGUI, or use remote broker)
+- mqtt client (installable on RUT955 with ``opkg install mosquitto-client``. If you get an error ``Unknown package``, try ``opkg update`` before. From new firmware RUT9_R_00.07.00 on You need ``opkg install mosquitto-client-ssl`` instead.)
 
