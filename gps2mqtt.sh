@@ -10,16 +10,12 @@ mkfifo "$temp_dir/out" "$temp_dir/err"
 exec >"$temp_dir/out" 2>"$temp_dir/err"
 
 thresdist=10 # sending threshold in m distance
-
-backpipe="$temp_dir/mqttgps_backpipe"
-pidfile="$temp_dir/mqttgps_pidfile"
 oldlat=0
 oldlong=0
 
 Calc() awk 'BEGIN{printf "%0.10f", '$*'}'
 
 ctrl_c() {
-  kill $(cat "$pidfile")
   rm -rf $temp_dir
   [ "$?" -eq "0" ] && {
     echo "Exit success."
@@ -29,21 +25,25 @@ ctrl_c() {
 
 listen() {
 
+  while true
+  do
+    curl -s mqtt://localhost:1883
+    ret=$?
+    [ $ret -eq 3 ] && unset tmp && unset ret && break
+    [ -z $tmp ] && echo "waiting for mqtt broker" && tmp=1
+    sleep 1
+  done
+
   echo "started."
 
-  while true; do
-    #echo "$message"
-    if [ $(echo "$message" | cut -d, -f 1) == "$dataset" ] &&
-      [ $(echo "$message" | cut -d, -f 7) -ge 1 ] &&
-      [ $(Checksum $(echo "$message" | cut -d$ -f2 | cut -d* -f1)) == $((0x$(echo "$message" | cut -d* -f2))) ]; then
+  while true
+  do
+    status=$(gpsctl -s)
+    if [ $status -ge 1 ]
+    then
 
-      lat=$(echo "$message" | cut -d, -f 3)
-      lat=$(Calc "($(echo $lat | cut -c1-2)+$(echo $lat | cut -c3-)/60)")
-      if [ $(echo "$message" | cut -d, -f 4) == "S" ]; then lat=-$lat; fi
-
-      long=$(echo "$message" | cut -d, -f 5)
-      long=$(Calc "($(echo $long | cut -c1-3)+$(echo $long | cut -c4-)/60)")
-      if [ $(echo "$message" | cut -d, -f 6) == "W" ]; then long=-$long; fi
+      lat=$(gpsctl -i)
+      long=$(gpsctl -x)
 
       # nach https://www.movable-type.co.uk/scripts/latlong.html:
       #a=$(Calc "sin(($lat-$oldlat)/2)^2+sin(($long-$oldlong)/2)^2*cos($lat)*cos($oldlat)")
@@ -51,26 +51,21 @@ listen() {
       # Vereinfachung Pythagoras, ok fuer kleine Abstaende:
       dist=$(Calc "6371000*sqrt(($lat-$oldlat)^2+($long-$oldlong)^2)/180*3.1415926")
 
-      #printf "\033[1K\rold: %.8f %.8f, new: %.8f %.8f, dist: %.8f" "$oldlat" "$oldlong" "$lat" "$long" "$dist"
-
-      if [ $(awk "BEGIN{if ($dist>$thresdist) print 1;else print 0}") == 1 ]; then
-        zeit=$(echo "$message" | cut -d, -f 2)
-        alt=$(echo "$message" | cut -d, -f 10)
-        gs=$(echo "$message" | cut -d, -f 12)
-        # datum=$(echo "$message" | cut -d, -f 10)
-        mosquitto_pub -h localhost -t womo/RUT955/gps -m "$zeit,$lat,$long,$alt,$gs"
+      if [ $(awk "BEGIN{if ($dist>$thresdist) print 1;else print 0}") == 1 ]
+      then
+        mosquitto_pub -h localhost -t womo/RUT955/gps -m "$(gpsctl -e),$lat,$long,$(gpsctl -a),$(gpsctl -v),$(gpsctl -p),$(gpsctl -a),$status,$(gpsctl -u)"
         oldlat=$lat
         oldlong=$long
       fi
-      sleep 1
     fi
+    sleep 1
 
-  done <$backpipe
+  done
 }
 
 usage() {
   echo "GPS 2 Mqtt"
-  echo "send position of GPS messages of type GPRMC via mqtt"
+  echo "send gps parameters via mqtt"
   echo "Configure parameters inside script."
 }
 
