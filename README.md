@@ -1,3 +1,9 @@
+# VE2MQTT
+Reads out messages from victron energy controller coming in via VE.Direct in serial text mode and sends them to a MQTT broker.
+
+# GPS2MQTT
+Reads out the internal GPS and sends it to a MQTT broker.
+
 # MQTT-Logger
 Simple MQTT-Logger for Busybox or other shells. Writes all MQTT messages from subscribed topics comma separated into a file. 
 Based on https://unix.stackexchange.com/a/274224
